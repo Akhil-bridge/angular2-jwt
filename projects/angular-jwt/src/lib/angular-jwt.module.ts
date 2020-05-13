@@ -10,7 +10,7 @@ export interface JwtModuleOptions {
   config?: {
     tokenGetter?: () => string | null | Promise<string | null>;
     headerName?: string;
-    authScheme?: string;
+    authScheme?: () => string | null | Promise<string | null>;
     whitelistedDomains?: Array<string | RegExp>;
     blacklistedRoutes?: Array<string | RegExp>;
     throwNoTokenError?: boolean;

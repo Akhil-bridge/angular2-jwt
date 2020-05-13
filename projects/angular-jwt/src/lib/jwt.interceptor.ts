@@ -16,7 +16,7 @@ import { from, Observable } from "rxjs";
 export class JwtInterceptor implements HttpInterceptor {
   tokenGetter: () => string | null | Promise<string | null>;
   headerName: string;
-  authScheme: string;
+  authScheme: () => string | null | Promise<string | null>;
   whitelistedDomains: Array<string | RegExp>;
   blacklistedRoutes: Array<string | RegExp>;
   throwNoTokenError: boolean;
@@ -28,10 +28,7 @@ export class JwtInterceptor implements HttpInterceptor {
   ) {
     this.tokenGetter = config.tokenGetter;
     this.headerName = config.headerName || "Authorization";
-    this.authScheme =
-      config.authScheme || config.authScheme === ""
-        ? config.authScheme
-        : "Bearer ";
+    this.authScheme = config.authScheme;
     this.whitelistedDomains = config.whitelistedDomains || [];
     this.blacklistedRoutes = config.blacklistedRoutes || [];
     this.throwNoTokenError = config.throwNoTokenError || false;
@@ -95,7 +92,7 @@ export class JwtInterceptor implements HttpInterceptor {
     } else if (token) {
       request = request.clone({
         setHeaders: {
-          [this.headerName]: `${this.authScheme}${token}`,
+          [this.headerName]: `${this.authScheme()}${token}`,
         },
       });
     }
